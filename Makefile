@@ -1,5 +1,14 @@
-GPG_KEYS=$(shell gpg --list-keys --with-colons --fast-list-mode | grep pub | awk -F: '{ print $$5 }')
+# GPG Backup Scheme
+#
+# * If printing on letter size paper, change the MONTAGE_LAYOUT to 2x2
+#
+# TODO:
+# [ ] Change font size based on key size: 1024 bit keys cause the filenames to overlap as they're so small
+#
+
+MONTAGE_LAYOUT=4x1
 SPLIT_FILES = 0 1 2 3
+GPG_KEYS=$(shell gpg --list-keys --with-colons --fast-list-mode | grep pub | awk -F: '{ print $$5 }')
 PRIV_OUT_BASE = $(addprefix export/, $(addsuffix -priv0, $(GPG_KEYS)))
 PUB_OUT_BASE  = $(addprefix export/, $(addsuffix -pub0, $(GPG_KEYS)))
 TRUST_OUT_BASE  = $(addprefix export/, $(addsuffix -trust0, $(GPG_KEYS)))
@@ -19,10 +28,7 @@ all: test_gpg_phrase test_s3 default
 
 default: $(FINAL_PRIV_JPG) $(FINAL_PUB_JPG) $(FINAL_CRED_JPG)
 
-include credentials.txt
-
-# TODO:
-# [ ] Change font size based on key size: 1024 bit keys cause the filenames to overlap as they're so small
+-include credentials.txt
 
 .INTERMEDIATE: $(TXT) export/credentials.png export/print-cred.png export/print-trust.txt export/print-trust.png
 
@@ -38,15 +44,13 @@ export/print-cred.png: export/credentials.png export/print-trust.png
 	@echo "[gen $@]"
 	@montage -bordercolor black -border 5%x5% -pointsize 48 -resize 400% -geometry +80+80 -tile 2x1 -label '%f' $^ $@
 
-# TODO Can these dependencies be made into a wildcard?
 export/print-pub-%.png: $(foreach filenum, $(SPLIT_FILES), export/%-pub0$(filenum).png)
 	@echo "[gen $@]"
-	@montage -bordercolor black -border 5%x5% -pointsize 48 -resize 400% -geometry +80+80 -tile 4x1 -label '%f' $^ $@
+	@montage -bordercolor black -border 5%x5% -pointsize 48 -resize 400% -geometry +80+80 -tile $(MONTAGE_LAYOUT) -label '%f' $^ $@
 
-# TODO Can these dependencies be made into a wildcard?
 export/print-priv-%.png: $(foreach filenum, $(SPLIT_FILES), export/%-priv0$(filenum).png)
 	@echo "[gen $@]"
-	@montage -bordercolor black -border 5%x5% -pointsize 96 -resize 400% -geometry +80+80 -tile 4x1 -label '%f' $^ $@
+	@montage -bordercolor black -border 5%x5% -pointsize 96 -resize 400% -geometry +80+80 -tile $(MONTAGE_LAYOUT) -label '%f' $^ $@
 
 export/%.png: %.txt
 	@echo "[gen $@]"
@@ -56,7 +60,6 @@ export/%.png: export/%.txt
 	@echo "[gen $@]"
 	@qrencode -o $@ < $<
 
-# TODO Can this be made a wildcard?
 $(foreach filenum, $(SPLIT_FILES), export/%0$(filenum).txt): export/%
 	@echo "[gen $@]"
 	@split -n 4 -d --additional-suffix=.txt $< export/$*
