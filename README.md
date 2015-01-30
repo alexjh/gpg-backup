@@ -22,13 +22,13 @@ could be changed to be a space separated list of the specific keys.
 One can find the GPG key ids by running:
     `gpg --list-keys --with-colons --fast-list-mode | grep pub | awk -F: '{ print $$5 }'`
 
-== Requirements ==
+## Requirements ##
 
 * paperkey
 * qrencode
 * [aspectpad script](http://www.fmwconcepts.com/imagemagick/aspectpad/index.php)
 
-== TODO ==
+## TODO ##
 
 * A more secure mode where the `key_PASSPHRASE` variable is prompted for and used
   to generate the credentials.jpg file rather than storing it on disk. S3
