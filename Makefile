@@ -12,13 +12,13 @@ GPG_KEYS=$(shell gpg --list-keys --with-colons --fast-list-mode | grep pub | awk
 PRIV_OUT_BASE = $(addprefix export/, $(addsuffix -priv0, $(GPG_KEYS)))
 PUB_OUT_BASE  = $(addprefix export/, $(addsuffix -pub0, $(GPG_KEYS)))
 TRUST_OUT_BASE  = $(addprefix export/, $(addsuffix -trust0, $(GPG_KEYS)))
-SPLIT = $(foreach var1, $(PRIV_OUT_BASE) $(PUB_OUT_BASE) $(trust_OUT_BASE), $(foreach var2, $(SPLIT_FILES), $(var1)$(var2))) 
+SPLIT = $(foreach var1, $(PRIV_OUT_BASE) $(PUB_OUT_BASE) $(trust_OUT_BASE), $(foreach var2, $(SPLIT_FILES), $(var1)$(var2)))
 TXT = $(addsuffix .txt, $(SPLIT))
 PNG = $(addsuffix .png, $(SPLIT))
 
-FINAL_PRIV_JPG = $(addprefix export/print-priv-, $(addsuffix .jpg, $(GPG_KEYS))) 
-FINAL_PUB_JPG = $(addprefix export/print-pub-, $(addsuffix .jpg, $(GPG_KEYS))) 
-FINAL_CRED_JPG = export/print-cred.jpg 
+FINAL_PRIV_JPG = $(addprefix export/print-priv-, $(addsuffix .jpg, $(GPG_KEYS)))
+FINAL_PUB_JPG = $(addprefix export/print-pub-, $(addsuffix .jpg, $(GPG_KEYS)))
+FINAL_CRED_JPG = export/print-cred.jpg
 
 # Global silent as I'm not able to silence the rm step of intermediates
 .SILENT:
